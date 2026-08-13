@@ -2235,10 +2235,8 @@ function OnboardingView({
   const runtimeSetupStep = step === 2;
   const byokConnectionVerified =
     visibleProviderTestState.status === 'done' && visibleProviderTestState.result.ok;
-  const localConnectionVerified =
-    visibleAgentTestState.status === 'done' && visibleAgentTestState.result.ok;
   const connectStepRuntimeReady =
-    (runtime === 'local' && selectedAgent !== null && localConnectionVerified) ||
+    (runtime === 'local' && selectedAgent !== null) ||
     (runtime === 'byok' && byokConnectionVerified);
   const connectStepBlocked = runtimeSetupStep && !connectStepRuntimeReady;
   const connectGateReason: 'no_runtime' | 'local_agent_unavailable' | 'byok_unverified' | null =
