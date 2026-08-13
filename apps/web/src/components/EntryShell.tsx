@@ -3202,8 +3202,7 @@ function OnboardingView({
 
   const primaryActionLabel = t('settings.onboardingContinue');
 
-  // Step 1 is identity only: every user signs into Open Design Cloud before
-  // choosing Hosted, Local, or BYOK on the next screen.
+  // Step 0 offers cloud sign-in, but local CLI / BYOK can skip it.
   if (step === 0) {
     const cloudBusy = amrLoginPending;
     const amrStatusResolving = !amrStatusResolved;
@@ -3253,6 +3252,33 @@ function OnboardingView({
                       : t('settings.onboardingCloudSignIn')}
               </span>
             </button>
+            {!cloudBusy && !amrSignedIn ? (
+              <div className="onboarding-cloud__alts">
+                <Button
+                  type="button"
+                  variant="subtle"
+                  className="onboarding-cloud__alt-btn"
+                  onClick={() => {
+                    setModelSource('local');
+                    setStep(1);
+                  }}
+                >
+                  {t('settings.onboardingLocalTitle')}
+                </Button>
+                <span className="onboarding-cloud__alts-or">{t('settings.onboardingCloudOr')}</span>
+                <Button
+                  type="button"
+                  variant="subtle"
+                  className="onboarding-cloud__alt-btn"
+                  onClick={() => {
+                    setModelSource('byok');
+                    setStep(1);
+                  }}
+                >
+                  {t('settings.onboardingByokTitle')}
+                </Button>
+              </div>
+            ) : null}
             {amrLoginError ? (
               <span className="onboarding-cloud__error" role="alert">
                 {amrLoginError}
