@@ -37,7 +37,7 @@ import {
   EVENT_SCHEMA_VERSION,
 } from '@open-design/contracts/analytics';
 import { readAppConfig } from './app-config.js';
-import { readTelemetryEnvironment } from './telemetry-environment.js';
+import { isProductTelemetryDisabled, readTelemetryEnvironment } from './telemetry-environment.js';
 
 const DEFAULT_HOST = 'https://us.i.posthog.com';
 
@@ -179,6 +179,7 @@ export interface PosthogConfig {
 export function readPosthogConfig(
   env: NodeJS.ProcessEnv = process.env,
 ): PosthogConfig | null {
+  if (isProductTelemetryDisabled(env)) return null;
   const key = env.POSTHOG_KEY?.trim();
   if (!key) return null;
   const host = (env.POSTHOG_HOST?.trim() || DEFAULT_HOST).replace(/\/+$/, '');

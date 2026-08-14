@@ -5,6 +5,28 @@ export const DEFAULT_LOCAL_ENV_FILE_NAMES = [".env.development.local", ".env.loc
 export const LOCAL_DEVELOPMENT_TELEMETRY_ENV = "local_development";
 export const TELEMETRY_ENV_KEY = "OD_TELEMETRY_ENV";
 
+const TELEMETRY_INGEST_KEYS = [
+  "POSTHOG_KEY",
+  "POSTHOG_HOST",
+  "POSTHOG_ENV",
+  "POSTHOG_CLI_API_KEY",
+  "POSTHOG_PERSONAL_API_KEY",
+  "POSTHOG_CLI_PROJECT_ID",
+  "POSTHOG_PROJECT_ID",
+  "POSTHOG_CLI_HOST",
+  "LANGFUSE_PUBLIC_KEY",
+  "LANGFUSE_SECRET_KEY",
+  "LANGFUSE_BASE_URL",
+  "LANGFUSE_HOST",
+  "LANGFUSE_ENVIRONMENT",
+  "OPEN_DESIGN_TELEMETRY_RELAY_URL",
+  "OPEN_DESIGN_TELEMETRY_TIMEOUT_MS",
+  "OPEN_DESIGN_VELA_TELEMETRY",
+  "OD_ATTRIBUTION_LEDGER_TOKEN",
+  "OD_ATTRIBUTION_LEDGER_URL",
+  "OD_FORCE_TELEMETRY",
+] as const;
+
 export interface LoadWorkspaceLocalEnvResult {
   envPath: string | null;
   loaded: boolean;
@@ -20,9 +42,11 @@ export function loadWorkspaceLocalEnv(options: {
   log?: (message: string) => void;
 }): LoadWorkspaceLocalEnvResult {
   const flags = parseLocalEnvFlags(options.args ?? []);
-  if (flags.disabled || flags.help) return { envPath: null, loaded: false, loadedFiles: [], keys: [], skippedFiles: [] };
+  if (flags.help) return { envPath: null, loaded: false, loadedFiles: [], keys: [], skippedFiles: [] };
 
   const env = options.env ?? process.env;
+  stripTelemetryIngestEnv(env);
+  if (flags.disabled) return { envPath: null, loaded: false, loadedFiles: [], keys: [], skippedFiles: [] };
   const envFileNames = flags.explicitFiles.length > 0 ? flags.explicitFiles : [...DEFAULT_LOCAL_ENV_FILE_NAMES];
   const explicit = flags.explicitFiles.length > 0;
   const loadedFiles: string[] = [];
@@ -40,6 +64,7 @@ export function loadWorkspaceLocalEnv(options: {
     const parsed = parseDotEnvLocal(readFileSync(envPath, "utf8"));
     for (const [key, value] of Object.entries(parsed)) {
       if (loadedKeys.has(key)) continue;
+      if ((TELEMETRY_INGEST_KEYS as readonly string[]).includes(key)) continue;
       env[key] = value;
       loadedKeys.add(key);
     }
@@ -65,6 +90,12 @@ export function loadWorkspaceLocalEnv(options: {
     keys: [...loadedKeys].sort(),
     skippedFiles,
   };
+}
+
+function stripTelemetryIngestEnv(env: NodeJS.ProcessEnv): void {
+  for (const key of TELEMETRY_INGEST_KEYS) {
+    delete env[key];
+  }
 }
 
 function parseLocalEnvFlags(args: readonly string[]): {

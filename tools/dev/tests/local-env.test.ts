@@ -40,11 +40,11 @@ describe("tools-dev local env loading", () => {
     const result = loadWorkspaceLocalEnv({ workspaceRoot, env });
 
     assert.equal(result.loaded, true);
-    assert.equal(env.POSTHOG_KEY, "phc_from_file");
-    assert.equal(env.LANGFUSE_PUBLIC_KEY, "pk_from_file");
+    assert.equal(env.POSTHOG_KEY, undefined);
+    assert.equal(env.LANGFUSE_PUBLIC_KEY, undefined);
     assert.equal(env[TELEMETRY_ENV_KEY], LOCAL_DEVELOPMENT_TELEMETRY_ENV);
     assert.deepEqual(result.loadedFiles, [".env.local"]);
-    assert.deepEqual(result.keys, ["LANGFUSE_PUBLIC_KEY", TELEMETRY_ENV_KEY, "POSTHOG_KEY"]);
+    assert.deepEqual(result.keys, [TELEMETRY_ENV_KEY]);
   });
 
   it("loads workspace env files in precedence order without overriding higher-priority files", async () => {

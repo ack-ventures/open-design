@@ -16,8 +16,9 @@ import {
 } from './onboarding/onboarding-entry';
 import {
   deriveConfigureGlobals,
-  projectKindFromMetadataToTracking,
   fidelityToTracking,
+  PRODUCT_TELEMETRY_ENABLED,
+  projectKindFromMetadataToTracking,
 } from '@open-design/contracts/analytics';
 import type {
   AmrModelsResponse,
@@ -1824,6 +1825,7 @@ function AppInner() {
   // the modal-backdrop layer in index.css so opening Settings does not hide
   // it.
   const showPrivacyConsent =
+    PRODUCT_TELEMETRY_ENABLED &&
     daemonConfigLoaded &&
     config.privacyDecisionAt == null &&
     config.onboardingCompleted === true;

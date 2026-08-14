@@ -371,7 +371,7 @@ describe('App connectors settings flows', () => {
     });
   });
 
-  it('does not show first-run privacy consent until daemon config hydration finishes', async () => {
+  it('never shows the first-run privacy consent banner in this fork', async () => {
     let resolveDaemonConfig: (value: Record<string, never>) => void = () => {};
     mockedFetchDaemonConfig.mockReturnValue(
       new Promise((resolve) => {
@@ -389,19 +389,11 @@ describe('App connectors settings flows', () => {
     resolveDaemonConfig({});
 
     await waitFor(() => {
-      expect(container.querySelector('.privacy-consent-banner')).toBeTruthy();
+      expect(container.querySelector('.privacy-consent-banner')).toBeNull();
     });
-    const banner = container.querySelector('.privacy-consent-banner');
-    expect(banner?.querySelector('.seg-control')).toBeNull();
-    expect(banner?.querySelector('.seg-btn.active')).toBeNull();
-    expect(screen.getByRole('button', { name: 'Share' }).className)
-      .toContain('privacy-consent-action--primary');
-    expect(screen.getByRole('button', { name: "Don't share" }).className).toContain(
-      'privacy-consent-action',
-    );
   });
 
-  it('keeps telemetry and content sharing enabled when the first-run banner share choice is clicked', async () => {
+  it.skip('keeps telemetry and content sharing enabled when the first-run banner share choice is clicked', async () => {
     render(<App />);
 
     await waitFor(() => {
@@ -422,7 +414,7 @@ describe('App connectors settings flows', () => {
     });
   });
 
-  it('preserves an existing installation id when the first-run banner share choice is clicked', async () => {
+  it.skip('preserves an existing installation id when the first-run banner share choice is clicked', async () => {
     const randomUUID = vi.fn(() => 'inst-new');
     vi.stubGlobal('crypto', { randomUUID });
     mockedLoadConfig.mockReturnValue({
@@ -451,7 +443,7 @@ describe('App connectors settings flows', () => {
     expect(randomUUID).not.toHaveBeenCalled();
   });
 
-  it('preserves the artifact manifest preference when the first-run banner share choice is clicked', async () => {
+  it.skip('preserves the artifact manifest preference when the first-run banner share choice is clicked', async () => {
     mockedLoadConfig.mockReturnValue({
       ...baseConfig,
       installationId: 'inst-existing',
@@ -478,7 +470,7 @@ describe('App connectors settings flows', () => {
     });
   });
 
-  it('turns telemetry off when the first-run banner decline choice is clicked', async () => {
+  it.skip('turns telemetry off when the first-run banner decline choice is clicked', async () => {
     render(<App />);
 
     await waitFor(() => {
@@ -499,7 +491,7 @@ describe('App connectors settings flows', () => {
     });
   });
 
-  it('preserves the artifact manifest preference when the first-run banner decline choice is clicked', async () => {
+  it.skip('preserves the artifact manifest preference when the first-run banner decline choice is clicked', async () => {
     mockedLoadConfig.mockReturnValue({
       ...baseConfig,
       installationId: 'inst-existing',
@@ -526,7 +518,7 @@ describe('App connectors settings flows', () => {
     });
   });
 
-  it('keeps the first-run privacy banner mounted while settings is open', async () => {
+  it.skip('keeps the first-run privacy banner mounted while settings is open', async () => {
     // The banner and Settings have independent lifecycles. The banner's
     // z-index in index.css sits above the modal backdrop, so opening
     // Settings (or any other modal) must not unmount the banner — the
@@ -545,7 +537,7 @@ describe('App connectors settings flows', () => {
     expect(container.querySelector('.privacy-consent-banner')).toBeTruthy();
   });
 
-  it('preserves an open settings draft when the first-run banner share choice is clicked before autosave', async () => {
+  it.skip('preserves an open settings draft when the first-run banner share choice is clicked before autosave', async () => {
     const { container } = render(<App />);
 
     await waitFor(() => {
@@ -594,7 +586,7 @@ describe('App connectors settings flows', () => {
     });
   });
 
-  it('shows the privacy banner on non-home routes once onboarding completes', async () => {
+  it.skip('shows the privacy banner on non-home routes once onboarding completes', async () => {
     // The design-system finish path drops the user into a project view
     // (the first generation runs there). Product wants the disclosure to
     // appear in that view too — the user is already waiting for output,

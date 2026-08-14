@@ -12,6 +12,7 @@ import {
   writeInstallationFile,
   type PendingAttribution,
 } from '../installation.js';
+import { isProductTelemetryDisabled } from '../telemetry-environment.js';
 
 const DEFAULT_ATTRIBUTION_LEDGER_URL = 'https://download.open-design.ai/api/attribution';
 
@@ -91,6 +92,7 @@ export function createAttributionService(deps: Omit<RegisterAttributionRoutesDep
       const appConfig = await deps.appConfig.readAppConfig(dataDir);
       const installation = await readInstallationFile(installationDir);
       const installationId = cleanString(appConfig.installationId) ?? cleanString(installation.installationId);
+      if (isProductTelemetryDisabled(env)) return null;
       if (appConfig.telemetry?.metrics !== true || !installationId) return null;
       const baseUrl = env.OD_ATTRIBUTION_LEDGER_URL?.trim() || DEFAULT_ATTRIBUTION_LEDGER_URL;
       const secret = env.OD_ATTRIBUTION_LEDGER_TOKEN?.trim();
@@ -271,6 +273,7 @@ async function consumeLedgerToken(input: {
   installationId: string;
   token: string;
 }): Promise<LedgerConsumeResult | null> {
+  if (isProductTelemetryDisabled(input.env)) return null;
   const baseUrl = input.env.OD_ATTRIBUTION_LEDGER_URL?.trim() || DEFAULT_ATTRIBUTION_LEDGER_URL;
   if (!baseUrl) return null;
   const secret = input.env.OD_ATTRIBUTION_LEDGER_TOKEN?.trim();

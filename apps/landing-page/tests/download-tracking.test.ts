@@ -116,7 +116,7 @@ test('posthog: hero direct download (rewritten to .dmg) → direct + placement=h
       text: '下载桌面端',
     }),
   );
-  assert.equal(ev.defaultPrevented, true, 'direct download should be routed through attribution mint');
+  assert.equal(ev.defaultPrevented, false, 'this fork does not intercept downloads for attribution mint');
 });
 
 test('posthog: cta-band direct download → direct + placement=cta', () => {
@@ -218,4 +218,8 @@ test('google-analytics: emits page_name and the /download/ regex matches only th
   assert.ok(re.test('/download'));
   assert.ok(!re.test('/downloads-guide/'));
   assert.ok(!re.test('/blog/'));
+});
+
+test('posthog: does not load a hardcoded ingest key when none is provided', () => {
+  assert.equal(posthogHeadHtml(undefined, undefined, 'landing_home'), '');
 });

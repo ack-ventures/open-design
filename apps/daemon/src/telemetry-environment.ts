@@ -1,4 +1,18 @@
+import { PRODUCT_TELEMETRY_ENABLED } from '@open-design/contracts/analytics';
+
 const DEFAULT_TELEMETRY_ENV = 'development';
+
+/** Tests only. Production and tools-dev never set this. */
+export const FORCE_TELEMETRY_ENV = 'OD_FORCE_TELEMETRY';
+
+export function isProductTelemetryDisabled(
+  env: NodeJS.ProcessEnv = process.env,
+): boolean {
+  if (env[FORCE_TELEMETRY_ENV] === '1' || process.env[FORCE_TELEMETRY_ENV] === '1') {
+    return false;
+  }
+  return !PRODUCT_TELEMETRY_ENABLED;
+}
 
 export function readTelemetryEnvironment(
   env: NodeJS.ProcessEnv = process.env,

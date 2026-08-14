@@ -53,3 +53,4 @@ process.env.OPEN_DESIGN_VELA_TELEMETRY ??= 'off';
 // on a prior manual `pnpm --filter @open-design/daemon build`.
 ensureDaemonCliBuilt();
 process.env.OD_DAEMON_CLI_PATH = daemonCliDist;
+process.env.OD_FORCE_TELEMETRY = '1';

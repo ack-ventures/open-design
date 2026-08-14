@@ -88,14 +88,8 @@ export type ToolPackConfig = {
   amrProfile?: ToolPackAmrProfile;
   telemetryRelayUrl?: string;
   /**
-   * PostHog product-analytics ingest key, sourced from process.env.POSTHOG_KEY
-   * at packaging time. Baked into open-design-config.json so the packaged
-   * daemon can read it as POSTHOG_KEY env at launch — only official Open
-   * Design builds (CI with the secret set) ship with this; forks compiling
-   * locally produce binaries that omit the key and the integration
-   * short-circuits cleanly. Apache-2.0 keeps the bundle public, but `phc_`
-   * keys are write-only event ingest keys (cannot read your project data),
-   * so embedding them in the binary is the PostHog-recommended pattern.
+   * Intentionally unused in this fork. Official nexu builds bake POSTHOG_KEY
+   * from CI; we never write it into open-design-config.json.
    */
   posthogKey?: string;
   posthogHost?: string;
@@ -193,34 +187,12 @@ function resolveToolPackAmrProfile(value: string | undefined): ToolPackAmrProfil
   throw new Error(`OPEN_DESIGN_AMR_PROFILE must be prod, test, feature-test, or local: ${value}`);
 }
 
-function resolveToolPackPosthogKey(value: string | undefined): string | undefined {
-  if (value == null) return undefined;
-  const normalized = value.trim();
-  if (normalized.length === 0) return undefined;
-  // PostHog public keys start with `phc_`. We don't hard-fail on other
-  // shapes — third-party PostHog deployments may use different prefixes —
-  // but flag obviously-wrong values (whitespace, control chars) so a
-  // misconfigured CI secret doesn't silently bake garbage into the bundle.
-  if (/[\s\x00-\x1f]/.test(normalized)) {
-    throw new Error(`POSTHOG_KEY contains whitespace or control chars: ${value}`);
-  }
-  return normalized;
+function resolveToolPackPosthogKey(_value: string | undefined): string | undefined {
+  return undefined;
 }
 
-function resolveToolPackPosthogHost(value: string | undefined): string | undefined {
-  if (value == null) return undefined;
-  const normalized = value.trim();
-  if (normalized.length === 0) return undefined;
-  let parsed: URL;
-  try {
-    parsed = new URL(normalized);
-  } catch {
-    throw new Error(`POSTHOG_HOST must be an absolute URL: ${value}`);
-  }
-  if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
-    throw new Error(`POSTHOG_HOST must be http(s): ${value}`);
-  }
-  return normalized.replace(/\/+$/, "");
+function resolveToolPackPosthogHost(_value: string | undefined): string | undefined {
+  return undefined;
 }
 
 /**
@@ -245,60 +217,20 @@ function resolveToolPackVelaWebUrl(value: string | undefined): string | undefine
   return normalized.replace(/\/+$/, "");
 }
 
-function resolveToolPackPosthogCliApiKey(value: string | undefined): string | undefined {
-  if (value == null) return undefined;
-  const normalized = value.trim();
-  if (normalized.length === 0) return undefined;
-  // Personal API keys start with `phx_`. As with POSTHOG_KEY, third-party
-  // PostHog deployments may use different prefixes; only flag obviously-wrong
-  // values (whitespace, control chars) so a misconfigured CI secret doesn't
-  // silently corrupt the upload step.
-  if (/[\s\x00-\x1f]/.test(normalized)) {
-    throw new Error(`POSTHOG_CLI_API_KEY contains whitespace or control chars`);
-  }
-  return normalized;
+function resolveToolPackPosthogCliApiKey(_value: string | undefined): string | undefined {
+  return undefined;
 }
 
-function resolveToolPackPosthogCliProjectId(value: string | undefined): string | undefined {
-  if (value == null) return undefined;
-  const normalized = value.trim();
-  if (normalized.length === 0) return undefined;
-  if (!/^[0-9]+$/.test(normalized)) {
-    throw new Error(`POSTHOG_CLI_PROJECT_ID must be a numeric project id: ${value}`);
-  }
-  return normalized;
+function resolveToolPackPosthogCliProjectId(_value: string | undefined): string | undefined {
+  return undefined;
 }
 
-function resolveToolPackPosthogCliHost(value: string | undefined): string | undefined {
-  if (value == null) return undefined;
-  const normalized = value.trim();
-  if (normalized.length === 0) return undefined;
-  let parsed: URL;
-  try {
-    parsed = new URL(normalized);
-  } catch {
-    throw new Error(`POSTHOG_CLI_HOST must be an absolute URL: ${value}`);
-  }
-  if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
-    throw new Error(`POSTHOG_CLI_HOST must be http(s): ${value}`);
-  }
-  return normalized.replace(/\/+$/, "");
+function resolveToolPackPosthogCliHost(_value: string | undefined): string | undefined {
+  return undefined;
 }
 
-function resolveToolPackTelemetryRelayUrl(value: string | undefined): string | undefined {
-  if (value == null) return undefined;
-  const normalized = value.trim();
-  if (normalized.length === 0) return undefined;
-  let parsed: URL;
-  try {
-    parsed = new URL(normalized);
-  } catch {
-    throw new Error(`OPEN_DESIGN_TELEMETRY_RELAY_URL must be an absolute https URL: ${value}`);
-  }
-  if (parsed.protocol !== "https:") {
-    throw new Error(`OPEN_DESIGN_TELEMETRY_RELAY_URL must use https: ${value}`);
-  }
-  return normalized.replace(/\/+$/, "");
+function resolveToolPackTelemetryRelayUrl(_value: string | undefined): string | undefined {
+  return undefined;
 }
 
 function resolveToolPackUpdateMetadataUrl(value: string | undefined): string | undefined {

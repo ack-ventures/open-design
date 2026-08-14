@@ -22,6 +22,7 @@ import { resolveAgentLaunch } from '../runtimes/launch.js';
 import { spawnEnvForAgent } from '../runtimes/env.js';
 import { getAgentDef } from '../runtimes/registry.js';
 import { resolveAmrProfile } from './vela-profile.js';
+import { isProductTelemetryDisabled } from '../telemetry-environment.js';
 
 export { resolveAmrProfile } from './vela-profile.js';
 
@@ -1771,6 +1772,7 @@ async function mirrorAmrAnalyticsEvent(
   const fetchImpl = deps.fetchImpl ?? (globalThis.fetch as unknown as FetchLike | undefined);
   if (!fetchImpl) return { mirrored: false };
   const env = deps.env ?? process.env;
+  if (isProductTelemetryDisabled(env)) return { mirrored: false };
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), AMR_ANALYTICS_TIMEOUT_MS);
   timeout.unref?.();

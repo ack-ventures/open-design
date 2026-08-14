@@ -11,6 +11,9 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['tests/**/*.test.{ts,tsx}'],
+    env: {
+      OD_FORCE_TELEMETRY: '1',
+    },
     // Keep this above the shared Testing Library asyncUtilTimeout so failed
     // waits retain Testing Library's assertion/DOM diagnostics.
     testTimeout: 5_000,

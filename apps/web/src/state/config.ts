@@ -103,16 +103,8 @@ export const DEFAULT_CONFIG: AppConfig = {
   orbit: DEFAULT_ORBIT,
   projectLocations: [],
   defaultProjectLocationId: 'default',
-  // Telemetry defaults to ON so fresh-install users emit onboarding /
-  // ui_click events from the first frame. The disclosure modal still
-  // appears after `onboardingCompleted` flips, and Settings → Privacy
-  // remains the one-click opt-out. Without these defaults the gate at
-  // `daemon/src/analytics.ts` (`if (telemetry?.metrics !== true) return`)
-  // dropped every event fired during onboarding because no consent
-  // existed yet — observed live on the prerelease.10 QA run, which left
-  // zero `page_view pn=onboarding` rows on PostHog despite the user
-  // completing the flow.
-  telemetry: { metrics: true, content: true },
+  // Telemetry defaults off. Ingest is compiled off in this fork.
+  telemetry: { metrics: false, content: false },
 };
 
 /** Well-known providers with pre-filled base URLs. */
@@ -1118,22 +1110,8 @@ export function mergeDaemonConfig(
     // has resolved the first-run prompt and should not see it again.
     next.privacyDecisionAt = Date.now();
   }
-  // Default-on reporting. Unless the user has explicitly opted out
-  // (Settings → "Don't share", which persists telemetry.metrics === false
-  // together with installationId: null), an install reports with the
-  // product's default telemetry channels on and carries a stable
-  // installationId. This is the single source of the "Opted out" state:
-  // previously an upgraded or never-prompted install could sit with
-  // telemetry on but no id (the daemon ships a metrics+content default but
-  // never mints an id), which the Settings → Privacy field rendered as
-  // "Opted out" even though the user never declined. We mint the id and
-  // keep the default channels on so the displayed state matches the product
-  // default — the same metrics+content surface the first-run banner's
-  // "Share" choice enables (artifactManifest stays off, as it
-  // does there).
-  // This does NOT override an explicit opt-out: metrics === false short-
-  // circuits the whole block, and any channel the user already turned off
-  // is preserved via the nullish-coalesce.
+  // Default-off reporting in this fork. An explicit Share choice in
+  // Settings still cannot ingest: daemon sinks are compiled off.
   const explicitlyOptedOut = next.telemetry?.metrics === false;
   if (!explicitlyOptedOut && !next.installationId) {
     next.installationId = randomUUID();

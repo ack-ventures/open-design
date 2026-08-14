@@ -13,11 +13,8 @@
  * exactly like GA when the measurement id is absent.
  */
 
-// Fallback so production works even if the deploy platform forgets the env
-// var. `PUBLIC_POSTHOG_KEY` / `PUBLIC_POSTHOG_HOST` override these.
-const DEFAULT_KEY = 'phc_u5dHWkwdqN626opkbbjDKk7xNzxR2UsJbdQqx3DncbjU';
 const DEFAULT_HOST = 'https://us.i.posthog.com';
-const DEFAULT_DOWNLOAD_ATTRIBUTION_URL = 'https://download.open-design.ai/api/attribution/mint';
+const DEFAULT_DOWNLOAD_ATTRIBUTION_URL = '';
 
 /**
  * The delegated tracker installed after `posthog.init`. Plain DOM, no bundler
@@ -296,7 +293,7 @@ export function posthogHeadHtml(
   host: string | undefined,
   pageName = 'landing_home',
 ): string {
-  const key = apiKey || DEFAULT_KEY;
+  const key = apiKey?.trim() || '';
   if (!key) return '';
   const apiHost = host || DEFAULT_HOST;
   const downloadAttributionUrl =
